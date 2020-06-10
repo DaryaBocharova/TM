@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.constant.DataConstant;
 import ru.bocharova.se.api.service.IDomainService;
@@ -34,6 +35,7 @@ public final class DataJsonSaveCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'data-json-save'")
     public void execute() throws Exception {
         System.out.println("[DATA JSON SAVE]");
         final Domain domain = new Domain();

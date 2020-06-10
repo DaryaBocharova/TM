@@ -1,6 +1,7 @@
 package ru.bocharova.se.command.project;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.api.repository.IProjectRepository;
 import ru.bocharova.se.command.AbstractCommand;
@@ -34,6 +35,7 @@ public final class ProjectCreateCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'project-create'")
     public void execute() {
         System.out.println("[PROJECT CREATE]");
         System.out.println("ENTER NAME:");

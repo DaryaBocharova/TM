@@ -3,6 +3,7 @@ package ru.bocharova.se.command.data.xml;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.constant.DataConstant;
 import ru.bocharova.se.api.service.IDomainService;
@@ -33,6 +34,7 @@ public final class DataXmlLoadCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'data-xml-load'")
     public void execute() throws Exception {
         System.out.println("[LOAD XML DATA]");
         final File file = new File(DataConstant.FILE_XML);

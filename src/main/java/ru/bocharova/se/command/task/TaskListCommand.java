@@ -1,6 +1,7 @@
 package ru.bocharova.se.command.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.api.repository.ITaskRepository;
 import ru.bocharova.se.command.AbstractCommand;
@@ -27,6 +28,7 @@ public final class TaskListCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'task-list'")
     public void execute() {
         System.out.println("[TASK LIST]");
         int index = 1;

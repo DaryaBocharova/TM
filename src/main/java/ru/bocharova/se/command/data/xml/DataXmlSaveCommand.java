@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.constant.DataConstant;
 import ru.bocharova.se.api.service.IDomainService;
@@ -35,6 +36,7 @@ public final class DataXmlSaveCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'data-xml-save'")
     public void execute() throws Exception {
         System.out.println("[DATA XML SAVE]");
         final Domain domain = new Domain();

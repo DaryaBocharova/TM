@@ -1,6 +1,7 @@
 package ru.bocharova.se.command.project;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.api.repository.IProjectRepository;
 import ru.bocharova.se.command.AbstractCommand;
@@ -26,6 +27,7 @@ public final class ProjectClearCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'project-clear'")
     public void execute() {
         projectRepository .clear();
         System.out.println("[ALL PROJECTS REMOVED]");

@@ -1,6 +1,7 @@
 package ru.bocharova.se.command.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.api.repository.ITaskRepository;
 import ru.bocharova.se.command.AbstractCommand;
@@ -34,6 +35,7 @@ public final class TaskCreateCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'task-create'")
     public void execute() {
         System.out.println("[TASK CREATE]");
         System.out.println("ENTER NAME:");

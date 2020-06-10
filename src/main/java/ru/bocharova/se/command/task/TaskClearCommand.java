@@ -1,6 +1,7 @@
 package ru.bocharova.se.command.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.api.repository.ITaskRepository;
 import ru.bocharova.se.command.AbstractCommand;
@@ -26,6 +27,7 @@ public final class TaskClearCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'task-clear'")
     public void execute() {
         taskRepository.clear();
         System.out.println("[ALL TASK REMOVED]");

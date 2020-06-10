@@ -1,5 +1,6 @@
 package ru.bocharova.se.command.system;
 
+import org.springframework.context.event.EventListener;
 import ru.bocharova.se.command.AbstractCommand;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public final class HelpCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'help'")
     public void execute() {
         for (AbstractCommand command: commandList) {
             System.out.println(command.command()+ ": " + command.description());

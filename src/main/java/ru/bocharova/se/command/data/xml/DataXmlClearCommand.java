@@ -1,5 +1,6 @@
 package ru.bocharova.se.command.data.xml;
 
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.constant.DataConstant;
 import ru.bocharova.se.command.AbstractCommand;
@@ -21,6 +22,7 @@ public final class DataXmlClearCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'data-xml-clear'")
     public void execute() throws Exception {
         final File file = new File(DataConstant.FILE_XML);
         Files.deleteIfExists(file.toPath());

@@ -1,6 +1,7 @@
 package ru.bocharova.se.command.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.command.AbstractCommand;
 
@@ -27,6 +28,7 @@ public final class TaskRemoveCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'task-remove'")
     public void execute() {
         System.out.println("[REMOVING TASK]");
         System.out.println("Enter task order index:");

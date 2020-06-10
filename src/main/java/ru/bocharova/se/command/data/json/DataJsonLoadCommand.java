@@ -2,6 +2,7 @@ package ru.bocharova.se.command.data.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import ru.bocharova.se.constant.DataConstant;
 import ru.bocharova.se.api.service.IDomainService;
@@ -32,6 +33,7 @@ public final class DataJsonLoadCommand extends AbstractCommand {
     }
 
     @Override
+    @EventListener(condition = "#event.message == 'data-json-load'")
     public void execute() throws Exception {
         System.out.println("[LOAD JSON DATA]");
         final File file = new File(DataConstant.FILE_JSON);
