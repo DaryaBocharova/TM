@@ -1,14 +1,15 @@
-package ru.bocharova.se.command.task;
+package ru.bocharova.se.listener.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
-import ru.bocharova.se.command.AbstractCommand;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import ru.bocharova.se.listener.AbstractListener;
 
 import java.util.Scanner;
 
-@Service
-public final class TaskRemoveCommand extends AbstractCommand {
+@Component
+public final class TaskRemoveListener extends AbstractListener {
 
     private Scanner scanner;
 
@@ -27,8 +28,9 @@ public final class TaskRemoveCommand extends AbstractCommand {
         return "Remove selected task.";
     }
 
+    @Async
     @Override
-    @EventListener(condition = "#event.message == 'task-remove'")
+    @EventListener(condition = "@taskRemoveListener.command() == #event.message == 'task-remove'")
     public void execute() {
         System.out.println("[REMOVING TASK]");
         System.out.println("Enter task order index:");

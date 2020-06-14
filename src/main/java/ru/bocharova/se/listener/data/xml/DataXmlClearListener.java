@@ -1,15 +1,16 @@
-package ru.bocharova.se.command.data.xml;
+package ru.bocharova.se.listener.data.xml;
 
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import ru.bocharova.se.constant.DataConstant;
-import ru.bocharova.se.command.AbstractCommand;
+import ru.bocharova.se.listener.AbstractListener;
 
 import java.io.File;
 import java.nio.file.Files;
 
-@Service
-public final class DataXmlClearCommand extends AbstractCommand {
+@Component
+public final class DataXmlClearListener extends AbstractListener {
 
     @Override
     public String command() {
@@ -21,8 +22,9 @@ public final class DataXmlClearCommand extends AbstractCommand {
         return "Remove XML file.";
     }
 
+    @Async
     @Override
-    @EventListener(condition = "#event.message == 'data-xml-clear'")
+    @EventListener(condition = "@dataXmlClearListener.command() == #event.message == 'data-xml-clear'")
     public void execute() throws Exception {
         final File file = new File(DataConstant.FILE_XML);
         Files.deleteIfExists(file.toPath());

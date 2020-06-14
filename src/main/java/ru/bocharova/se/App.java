@@ -11,7 +11,7 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import ru.bocharova.se.controller.Bootstrap;
 
-@ComponentScan
+@ComponentScan("ru.bocharova.se")
 @Configuration
 @EnableAsync
 public class App {

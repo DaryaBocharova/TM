@@ -1,15 +1,16 @@
-package ru.bocharova.se.command.task;
+package ru.bocharova.se.listener.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import ru.bocharova.se.api.repository.ITaskRepository;
-import ru.bocharova.se.command.AbstractCommand;
+import ru.bocharova.se.listener.AbstractListener;
 
 import java.util.Scanner;
 
-@Service
-public final class TaskCreateCommand extends AbstractCommand {
+@Component
+public final class TaskCreateListener extends AbstractListener {
 
     private ITaskRepository taskRepository;
     private Scanner scanner;
@@ -34,8 +35,9 @@ public final class TaskCreateCommand extends AbstractCommand {
         return "Create new task.";
     }
 
+    @Async
     @Override
-    @EventListener(condition = "#event.message == 'task-create'")
+    @EventListener(condition = "@taskCreateListener.command() == #event.message == 'task-create'")
     public void execute() {
         System.out.println("[TASK CREATE]");
         System.out.println("ENTER NAME:");

@@ -1,15 +1,16 @@
-package ru.bocharova.se.command.data.json;
+package ru.bocharova.se.listener.data.json;
 
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import ru.bocharova.se.constant.DataConstant;
-import ru.bocharova.se.command.AbstractCommand;
+import ru.bocharova.se.listener.AbstractListener;
 
 import java.io.File;
 import java.nio.file.Files;
 
-@Service
-public final class DataJsonClearCommand extends AbstractCommand {
+@Component
+public final class DataJsonClearListener extends AbstractListener {
 
     @Override
     public String command() {
@@ -21,8 +22,9 @@ public final class DataJsonClearCommand extends AbstractCommand {
         return "Remove JSON file.";
     }
 
+    @Async
     @Override
-    @EventListener(condition = "#event.message == 'data-json-clear'")
+    @EventListener(condition = "@dataJsonClearListener.command() == #event.message == 'data-json-clear'")
     public void execute() throws Exception {
         final File file = new File(DataConstant.FILE_JSON);
         Files.deleteIfExists(file.toPath());

@@ -1,22 +1,22 @@
-package ru.bocharova.se.command.data.xml;
+package ru.bocharova.se.listener.data.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import ru.bocharova.se.constant.DataConstant;
 import ru.bocharova.se.api.service.IDomainService;
-import ru.bocharova.se.command.AbstractCommand;
+import ru.bocharova.se.listener.AbstractListener;
 import ru.bocharova.se.entity.Domain;
 
 import java.io.File;
 import java.nio.file.Files;
 
-
-@Service
-public final class DataXmlSaveCommand extends AbstractCommand {
+@Component
+public final class DataJsonSaveListener extends AbstractListener {
 
     private IDomainService domainService;
 
@@ -27,25 +27,26 @@ public final class DataXmlSaveCommand extends AbstractCommand {
 
     @Override
     public String command() {
-        return "data-xml-save";
+        return "data-json-save";
     }
 
     @Override
     public String description() {
-        return "Save Domain to XML.";
+        return "Save Domain to JSON.";
     }
 
+    @Async
     @Override
-    @EventListener(condition = "#event.message == 'data-xml-save'")
+    @EventListener(condition = "@dataJsonSaveListener.command() == #event.message == 'data-json-save'")
     public void execute() throws Exception {
-        System.out.println("[DATA XML SAVE]");
+        System.out.println("[DATA JSON SAVE]");
         final Domain domain = new Domain();
         domainService.export(domain);
-        final ObjectMapper objectMapper = new XmlMapper();
+        final ObjectMapper objectMapper = new ObjectMapper();
         final ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         final String json = objectWriter.writeValueAsString(domain);
         final byte[] data = json.getBytes("UTF-8");
-        final File file = new File(DataConstant.FILE_XML);
+        final File file = new File(DataConstant.FILE_JSON);
         Files.write(file.toPath(), data);
         System.out.println("[OK]");
     }

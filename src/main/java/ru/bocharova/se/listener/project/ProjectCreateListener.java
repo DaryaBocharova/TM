@@ -1,15 +1,16 @@
-package ru.bocharova.se.command.project;
+package ru.bocharova.se.listener.project;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import ru.bocharova.se.api.repository.IProjectRepository;
-import ru.bocharova.se.command.AbstractCommand;
+import ru.bocharova.se.listener.AbstractListener;
 
 import java.util.Scanner;
 
-@Service
-public final class ProjectCreateCommand extends AbstractCommand {
+@Component
+public final class ProjectCreateListener extends AbstractListener {
 
     private IProjectRepository projectRepository;
     private Scanner scanner;
@@ -34,8 +35,9 @@ public final class ProjectCreateCommand extends AbstractCommand {
         return "project-create";
     }
 
+    @Async
     @Override
-    @EventListener(condition = "#event.message == 'project-create'")
+    @EventListener(condition = "@projectCreateListener.command() == #event.message == 'project-create'")
     public void execute() {
         System.out.println("[PROJECT CREATE]");
         System.out.println("ENTER NAME:");

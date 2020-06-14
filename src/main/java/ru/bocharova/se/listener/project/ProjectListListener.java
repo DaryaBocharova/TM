@@ -1,14 +1,15 @@
-package ru.bocharova.se.command.project;
+package ru.bocharova.se.listener.project;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import ru.bocharova.se.api.repository.IProjectRepository;
-import ru.bocharova.se.command.AbstractCommand;
+import ru.bocharova.se.listener.AbstractListener;
 import ru.bocharova.se.entity.Project;
 
-@Service
-public final class ProjectListCommand extends AbstractCommand {
+@Component
+public final class ProjectListListener extends AbstractListener {
 
     private IProjectRepository projectRepository;
 
@@ -27,8 +28,9 @@ public final class ProjectListCommand extends AbstractCommand {
         return "Show all projects.";
     }
 
+    @Async
     @Override
-    @EventListener(condition = "#event.message == 'project-list'")
+    @EventListener(condition = "@projectListListener.command() == #event.message == 'project-list'")
     public void execute() {
         System.out.println("[PROJECT LIST]");
         int index = 1;

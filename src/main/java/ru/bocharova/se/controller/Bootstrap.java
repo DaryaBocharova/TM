@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import ru.bocharova.se.api.event.CustomEvent;
-import ru.bocharova.se.command.AbstractCommand;
+import ru.bocharova.se.listener.AbstractListener;
 import ru.bocharova.se.error.CommandAbsentException;
 import ru.bocharova.se.error.CommandCorruptException;
 
@@ -21,7 +21,7 @@ public class Bootstrap {
     private Scanner scanner;
     private ApplicationEventPublisher applicationEventPublisher;
 
-    private final Map<String, AbstractCommand> commands = new LinkedHashMap<>();
+    private final Map<String, AbstractListener> commands = new LinkedHashMap<>();
 
     public Bootstrap(Scanner scanner, ApplicationEventPublisher applicationEventPublisher) {
         this.scanner = scanner;
@@ -33,7 +33,7 @@ public class Bootstrap {
         this.scanner = scanner;
     }
 
-    public void registry(final AbstractCommand command) {
+    public void registry(final AbstractListener command) {
         final String cliCommand = command.command();
         final String cliDescription = command.description();
         if (cliCommand == null || cliCommand.isEmpty()) throw new CommandCorruptException();
@@ -48,10 +48,10 @@ public class Bootstrap {
     }
 
     public void registry(final Class clazz) throws IllegalAccessException, InstantiationException {
-        if (!AbstractCommand.class.isAssignableFrom(clazz)) return;
+        if (!AbstractListener.class.isAssignableFrom(clazz)) return;
         final Object command = clazz.newInstance();
-        final AbstractCommand abstractCommand = (AbstractCommand) command;
-        registry(abstractCommand);
+        final AbstractListener abstractListener = (AbstractListener) command;
+        registry(abstractListener);
     }
 
     @PostConstruct
@@ -72,12 +72,12 @@ public class Bootstrap {
 
     private void execute(final String command) throws Exception {
         if (command == null || command.isEmpty()) return;
-        final AbstractCommand abstractCommand = commands.get(command);
-        if (abstractCommand == null) return;
-        abstractCommand.execute();
+        final AbstractListener abstractListener = commands.get(command);
+        if (abstractListener == null) return;
+        abstractListener.execute();
     }
 
-    public List<AbstractCommand> getListCommand() {
+    public List<AbstractListener> getListCommand() {
         return new ArrayList<>(commands.values());
     }
 

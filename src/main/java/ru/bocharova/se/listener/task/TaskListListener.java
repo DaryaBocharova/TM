@@ -1,14 +1,15 @@
-package ru.bocharova.se.command.task;
+package ru.bocharova.se.listener.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import ru.bocharova.se.api.repository.ITaskRepository;
-import ru.bocharova.se.command.AbstractCommand;
+import ru.bocharova.se.listener.AbstractListener;
 import ru.bocharova.se.entity.Task;
 
-@Service
-public final class TaskListCommand extends AbstractCommand {
+@Component
+public final class TaskListListener extends AbstractListener {
 
     private ITaskRepository taskRepository;
 
@@ -27,8 +28,9 @@ public final class TaskListCommand extends AbstractCommand {
         return "Show all tasks.";
     }
 
+    @Async
     @Override
-    @EventListener(condition = "#event.message == 'task-list'")
+    @EventListener(condition = "@taskListListener.command() == #event.message == 'task-list'")
     public void execute() {
         System.out.println("[TASK LIST]");
         int index = 1;

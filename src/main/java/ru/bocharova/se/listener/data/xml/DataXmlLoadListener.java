@@ -1,19 +1,21 @@
-package ru.bocharova.se.command.data.json;
+package ru.bocharova.se.listener.data.xml;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import ru.bocharova.se.constant.DataConstant;
 import ru.bocharova.se.api.service.IDomainService;
-import ru.bocharova.se.command.AbstractCommand;
+import ru.bocharova.se.listener.AbstractListener;
 import ru.bocharova.se.entity.Domain;
 
 import java.io.File;
 import java.nio.file.Files;
 
-@Service
-public final class DataJsonLoadCommand extends AbstractCommand {
+@Component
+public final class DataXmlLoadListener extends AbstractListener {
 
     private IDomainService domainService;
 
@@ -24,23 +26,24 @@ public final class DataJsonLoadCommand extends AbstractCommand {
 
     @Override
     public String command() {
-        return "data-json-load";
+        return "data-xml-load";
     }
 
     @Override
     public String description() {
-        return "Load Domain from JSON.";
+        return "Load Domain from XML.";
     }
 
+    @Async
     @Override
-    @EventListener(condition = "#event.message == 'data-json-load'")
+    @EventListener(condition = "@dataXmlLoadListener.command() == #event.message == 'data-xml-load'")
     public void execute() throws Exception {
-        System.out.println("[LOAD JSON DATA]");
-        final File file = new File(DataConstant.FILE_JSON);
+        System.out.println("[LOAD XML DATA]");
+        final File file = new File(DataConstant.FILE_XML);
         if (!exists(file)) return;
         final byte[] bytes = Files.readAllBytes(file.toPath());
         final String json = new String(bytes, "UTF-8");
-        final ObjectMapper objectMapper = new ObjectMapper();
+        final ObjectMapper objectMapper = new XmlMapper();
         final Domain domain = objectMapper.readValue(json, Domain.class);
         domainService.load(domain);
         System.out.println("[OK]");
