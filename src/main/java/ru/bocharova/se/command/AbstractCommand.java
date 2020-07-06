@@ -1,6 +1,6 @@
-package ru.bocharova.se.listener;
+package ru.bocharova.se.command;
 
-public abstract class AbstractListener {
+public abstract class AbstractCommand {
 
     public abstract void execute() throws Exception;
 

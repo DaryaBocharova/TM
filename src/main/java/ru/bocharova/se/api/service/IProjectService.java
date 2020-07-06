@@ -2,32 +2,52 @@ package ru.bocharova.se.api.service;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.bocharova.se.entity.Project;
-
-import java.util.Collection;
-import java.util.List;
+import ru.bocharova.se.exception.DataValidateException;
 
 @Service
 public interface IProjectService {
 
-    Project createProject(@Nullable final String name);
+    @Transactional
+    void create(
+            @Nullable final Project project
+    ) throws DataValidateException;
 
-    Project merge(@Nullable final Project project);
+    @Transactional
+    void edit(
+            @Nullable final Project project
+    ) throws DataValidateException;
 
-    Project getProjectById(@Nullable final String id);
+    @Transactional(readOnly = true)
+    Project findOne(
+            @Nullable final String id,
+            @Nullable final String userId
+    ) throws DataValidateException;
 
-    void removeProjectById(@Nullable final String id);
+    @Transactional
+    void remove(
+            @Nullable final String id,
+            @Nullable final String userId
+    ) throws DataValidateException;
 
-    List<Project> getListProject();
+    @Transactional
+    void clear(
+    ) throws DataValidateException;
 
-    void clear();
+    @Transactional(readOnly = true)
+    Project findOne(
+            @Nullable final String id
+    ) throws DataValidateException;
 
-    void merge(@Nullable final Project... projects);
+    @Transactional
+    void remove(
+            @Nullable final String id
+    ) throws DataValidateException;
 
-    void load(@Nullable final Collection<Project> projects);
-
-    void load(@Nullable final Project... projects);
-
-    Project removeByOrderIndex(@Nullable final Integer orderIndex);
+    @Transactional
+    void removeAllByUserId(
+            @Nullable final String id
+    ) throws DataValidateException;
 
 }

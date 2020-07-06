@@ -3,33 +3,46 @@ package ru.bocharova.se.api.repository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 import ru.bocharova.se.entity.Project;
+import ru.bocharova.se.entity.User;
 
 import java.util.Collection;
-import java.util.List;
 
 @Repository
 public interface IProjectRepository {
 
-    Project createProject(@NotNull final String name);
+    Project findOne(
+            @NotNull final String id);
 
-    Project merge(@NotNull final Project project);
+    Collection<Project> findAll();
 
-    void merge(@NotNull final Collection<Project> projects);
+    void removeAll();
 
-    void merge(@NotNull final Project... projects);
+    void remove(
+            @NotNull final Project project);
 
-    void load(@NotNull final Collection<Project> projects);
+    void persist(
+            @NotNull final Project project);
 
-    void load(@NotNull final Project... projects);
+    Project merge(
+            @NotNull final Project project);
 
-    Project getProjectById(@NotNull final String id);
+    Collection<Project> findAllByUserId(
+            @NotNull final User user);
 
-    Project removeByOrderIndex(@NotNull final Integer orderIndex);
+    Project findOneByUserId(
+            @NotNull final String id,
+            @NotNull final User user);
 
-    void removeProjectById(@NotNull final String id);
+    void removeAllByUserID(
+            @NotNull final User user);
 
-    List<Project> getListProject();
+    Collection<Project> sortAllByUserId(
+            @NotNull final User user,
+            @NotNull final String parameter);
 
-    void clear();
+    Collection<Project> findAllByPartOfNameOrDescription(
+            @NotNull final String name,
+            @NotNull final String description,
+            @NotNull final User user);
 
 }

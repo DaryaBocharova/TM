@@ -2,36 +2,57 @@ package ru.bocharova.se.api.service;
 
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.bocharova.se.entity.Task;
-
-import java.util.Collection;
-import java.util.List;
+import ru.bocharova.se.exception.DataValidateException;
 
 @Service
 public interface ITaskService {
 
-    Task createTask(@Nullable final String name);
+    @Transactional
+    void create(
+            @Nullable final Task task
+    ) throws DataValidateException;
 
-    Task getTaskById(@Nullable final String id);
+    @Transactional
+    void edit(
+            @Nullable final Task task
+    ) throws DataValidateException;
 
-    Task merge(@Nullable final Task task);
+    @Transactional(readOnly = true)
+    Task findOne(
+            @Nullable final String id,
+            @Nullable final String userId
+    ) throws DataValidateException;
 
-    void removeTaskById(@Nullable final String id);
+    @Transactional
+    void remove(
+            @Nullable final String id,
+            @Nullable final String userId
+    ) throws DataValidateException;
 
-    List<Task> getListTask();
+    @Transactional
+    void clear(
+    ) throws DataValidateException;
 
-    void clear();
+    @Transactional(readOnly = true)
+    Task findOne(
+            @Nullable final String id
+    ) throws DataValidateException;
 
-    Task createTaskByProject(@Nullable final String projectId, String taskName);
+    @Transactional
+    void remove(
+            @Nullable final String id
+    ) throws DataValidateException;
 
-    Task getByOrderIndex(@Nullable final Integer orderIndex);
+    @Transactional
+    void removeAllByProjectId(
+            @Nullable final String id,
+            @Nullable final String userId
+    ) throws DataValidateException;
 
-    void merge(@Nullable final Task... tasks);
-
-    void load(@Nullable final Task... tasks);
-
-    void load(@Nullable final Collection<Task> tasks);
-
-    void removeTaskByOrderIndex(@Nullable final Integer orderIndex);
-
+    @Transactional
+    void removeAllByUserId(
+            @Nullable final String id
+    ) throws DataValidateException;
 }

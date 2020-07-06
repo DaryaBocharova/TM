@@ -2,7 +2,9 @@ package ru.bocharova.se.api.repository;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
+import ru.bocharova.se.entity.Project;
 import ru.bocharova.se.entity.Task;
+import ru.bocharova.se.entity.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,28 +12,48 @@ import java.util.List;
 @Repository
 public interface ITaskRepository {
 
-    Task createTask(@NotNull final String name);
+    Task findOne(@NotNull final String id);
 
-    Task getTaskById(@NotNull final String id);
+    Collection<Task> findAll();
 
-    Task getByOrderIndex(@NotNull final Integer orderIndex);
+    void removeAll();
 
-    void merge(@NotNull final Task... tasks);
+    void remove(
+            @NotNull final Task task);
 
-    void merge(@NotNull final Collection<Task> tasks);
+    void persist(
+            @NotNull final Task entity);
 
-    void load(@NotNull final Collection<Task> tasks);
+    Task merge(
+            @NotNull final Task task);
 
-    void load(@NotNull final Task... tasks);
 
-    Task merge(@NotNull final Task task);
+    Collection<Task> findAllByUserId(
+            @NotNull final User user);
 
-    void removeTaskById(@NotNull final String id);
+    Collection<Task> findAllByProjectAndUserId(
+            @NotNull final Project project,
+            @NotNull final User user);
 
-    void removeTaskByOrderIndex(@NotNull final Integer orderIndex);
 
-    List<Task> getListTask();
+    Task findOneByUserId(
+            @NotNull final String id,
+            @NotNull final User user);
 
-    void clear();
+    void removeAllByUserId(
+            @NotNull final User user);
 
+    void removeAllByProjectAndUserId(
+            @NotNull final Project project,
+            @NotNull final User user);
+
+
+    Collection<Task> sortAllByUserId(
+            @NotNull final User user,
+            @NotNull final String parameter);
+
+    Collection<Task> findAllByPartOfNameOrDescription(
+            @NotNull final String name,
+            @NotNull final String description,
+            @NotNull final User user);
 }

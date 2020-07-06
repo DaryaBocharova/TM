@@ -1,94 +1,164 @@
 package ru.bocharova.se.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.bocharova.se.api.repository.IProjectRepository;
 import ru.bocharova.se.api.repository.ITaskRepository;
+import ru.bocharova.se.api.repository.IUserRepository;
 import ru.bocharova.se.api.service.ITaskService;
 import ru.bocharova.se.entity.Project;
 import ru.bocharova.se.entity.Task;
+import ru.bocharova.se.entity.User;
+import ru.bocharova.se.exception.DataValidateException;
 
 import java.util.Collection;
-import java.util.List;
 
 @Service
 public final class TaskService implements ITaskService {
 
-    private final ITaskRepository taskRepository;
-
+    @NotNull
     private final IProjectRepository projectRepository;
 
+    @NotNull
+    private final ITaskRepository taskRepository;
+
+    @NotNull
+    private final IUserRepository userRepository;
+
+
+    @Autowired
     public TaskService(
-            final ITaskRepository taskRepository,
-            final IProjectRepository projectRepository
-    ) {
+            @NotNull final ITaskRepository taskRepository,
+            @NotNull final IProjectRepository projectRepository,
+            @NotNull final IUserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Task createTask(@Nullable final String name) {
-        if (name == null || name.isEmpty()) return null;
-        return taskRepository.createTask(name);
+    @Transactional
+    public void create(
+            @Nullable final Task task
+    ) throws DataValidateException {
+        taskRepository.persist(task);
     }
 
     @Override
-    public Task getTaskById(@Nullable final String id) {
-        return taskRepository.getTaskById(id);
+    @Transactional
+    public void edit(
+            @Nullable final Task task
+    ) throws DataValidateException {
+        @Nullable final Task task1 = taskRepository
+                .findOne(task.getId());
+        if (task == null) throw new DataValidateException("Task not found");
+        task.setName(task.getName());
+        task.setDateBegin(task.getDateBegin());
+        task.setDateEnd(task.getDateEnd());
+        taskRepository
+                .merge(task1);
     }
 
     @Override
-    public Task merge(@Nullable final Task task) {
-        return taskRepository.merge(task);
-    }
-
-    @Override
-    public void removeTaskById(@Nullable final String id) {
-        taskRepository.removeTaskById(id);
-    }
-
-    @Override
-    public List<Task> getListTask() {
-        return taskRepository.getListTask();
-    }
-
-    @Override
-    public void clear() {
-        taskRepository.clear();
-    }
-
-    @Override
-    public Task createTaskByProject(@Nullable final String projectId, final String taskName) {
-        final Project project = projectRepository.getProjectById(projectId);
-        if (project == null) return null;
-        final Task task = taskRepository.createTask(taskName);
-        task.setProjectId(project.getId());
+    @Transactional(readOnly = true)
+    public Task findOne(
+            @Nullable final String id,
+            @Nullable final String userId
+    ) throws DataValidateException {
+        @Nullable final Task task = taskRepository
+                .findOneByUserId(id, getUser(userId));
+        if (task == null) throw new DataValidateException("Task not found");
         return task;
     }
 
     @Override
-    public Task getByOrderIndex(@Nullable final Integer orderIndex) {
-        return taskRepository.getByOrderIndex(orderIndex);
+    @Transactional
+    public void remove(
+            @Nullable final String id,
+            @Nullable final String userId
+    ) throws DataValidateException {
+        @Nullable final Task task = taskRepository
+                .findOneByUserId(id, getUser(userId));
+        if (task == null) throw new DataValidateException("Task not found");
+        taskRepository.remove(task);
     }
 
     @Override
-    public void merge(@Nullable final Task... tasks) {
-        taskRepository.merge(tasks);
+    @Transactional
+    public void clear(
+    ) throws DataValidateException {
+        @Nullable final Collection<Task> tasks = taskRepository
+                .findAll();
+        if (tasks == null) throw new DataValidateException("Tasks not found");
+        tasks.forEach(taskRepository::remove);
     }
 
     @Override
-    public void load(@Nullable final Task... tasks) {
-        taskRepository.load(tasks);
+    @Transactional(readOnly = true)
+    public Task findOne(
+            @Nullable final String id
+    ) throws DataValidateException {
+        @Nullable final Task task = taskRepository
+                .findOne(id);
+        if (task == null) throw new DataValidateException("Task not found");
+        return task;
     }
 
     @Override
-    public void load(@Nullable final Collection<Task> tasks) {
-        taskRepository.load(tasks);
+    @Transactional
+    public void remove(
+            @Nullable final String id
+    ) throws DataValidateException {
+        @Nullable final Task task = taskRepository
+                .findOne(id);
+        if (task == null) throw new DataValidateException("Task not found");
+        taskRepository.remove(task);
     }
 
     @Override
-    public void removeTaskByOrderIndex(@Nullable final Integer orderIndex) {
-        taskRepository.removeTaskByOrderIndex(orderIndex);
+    @Transactional
+    public void removeAllByProjectId(
+            @Nullable final String id,
+            @Nullable final String userId
+    ) throws DataValidateException {
+        @Nullable final Collection<Task> tasks = taskRepository
+                .findAllByProjectAndUserId(getProject(id), getUser(userId));
+        if (tasks == null) throw new DataValidateException("Tasks not found");
+        tasks.forEach(taskRepository::remove);
     }
 
+    @Override
+    @Transactional
+    public void removeAllByUserId(
+            @Nullable final String id
+    ) throws DataValidateException {
+        @Nullable final Collection<Task> tasks = taskRepository
+                .findAllByUserId(getUser(id));
+        if (tasks == null) throw new DataValidateException("Tasks not found");
+        tasks.forEach(taskRepository::remove);
+
+    }
+
+    @Transactional(readOnly = true)
+    public User getUser(
+            @NotNull final String id
+    ) throws DataValidateException {
+        @Nullable final User user = userRepository.findOne(id);
+        if (user == null) throw new DataValidateException("User not found!");
+        return user;
+    }
+
+    @Transactional(readOnly = true)
+    public Project getProject(
+            @Nullable final String id
+    ) throws DataValidateException {
+        if (id == null || id.isEmpty() || "null".equals(id))
+            return null;
+        @Nullable final Project project = projectRepository.findOne(id);
+        if (project == null) throw new DataValidateException("Project not found!");
+        return project;
+    }
 }

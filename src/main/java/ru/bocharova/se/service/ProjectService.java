@@ -1,73 +1,142 @@
 package ru.bocharova.se.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.bocharova.se.api.repository.IProjectRepository;
+import ru.bocharova.se.api.repository.IUserRepository;
 import ru.bocharova.se.api.service.IProjectService;
 import ru.bocharova.se.entity.Project;
+import ru.bocharova.se.entity.User;
+import ru.bocharova.se.exception.DataValidateException;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public final class ProjectService implements IProjectService {
+public class ProjectService implements IProjectService {
 
-    private final IProjectRepository projectRepository;
+    @NotNull
+    final IProjectRepository projectRepository;
 
-    public ProjectService(@Nullable final IProjectRepository projectRepository) {
+    @NotNull
+    final IUserRepository userRepository;
+
+    @Autowired
+    public ProjectService(
+            @NotNull final IProjectRepository projectRepository,
+            @NotNull final IUserRepository userRepository) {
         this.projectRepository = projectRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Project createProject(@Nullable final String name) {
-        if (name == null || name.isEmpty()) return null;
-        return projectRepository.createProject(name);
+    @Transactional
+    public void create(
+            @Nullable final Project project
+    ) throws DataValidateException {
+        try {
+            projectRepository
+                    .persist(project);
+        } catch (Exception e) {
+            throw new DataValidateException(e.getMessage());
+        }
     }
 
     @Override
-    public Project merge(@Nullable final Project project) {
-        return projectRepository.merge(project);
+    @Transactional
+    public void edit(
+            @Nullable final Project project
+    ) throws DataValidateException {
+        @Nullable final Project project1 = projectRepository
+                .findOne(project.getId());
+        if (project == null) throw new DataValidateException("Project not found!");
+        project.setName(project.getName());
+        project.setDateBegin(project.getDateBegin());
+        project.setDateEnd(project.getDateEnd());
+        projectRepository
+                .merge(project);
     }
 
     @Override
-    public Project getProjectById(@Nullable final String id) {
-        return projectRepository.getProjectById(id);
+    @Transactional(readOnly = true)
+    public Project findOne(
+            @Nullable final String id,
+            @Nullable final String userId
+    ) throws DataValidateException {
+        @Nullable final Project project = projectRepository
+                .findOneByUserId(id, getUser(userId));
+        if (project == null) throw new DataValidateException("Project not found!");
+        return project;
     }
 
     @Override
-    public void removeProjectById(@Nullable final String id) {
-        projectRepository.removeProjectById(id);
+    @Transactional
+    public void remove(
+            @Nullable final String id,
+            @Nullable final String userId
+    ) throws DataValidateException {
+        @Nullable final Project project = projectRepository
+                .findOneByUserId(id, getUser(userId));
+        if (project == null) throw new DataValidateException("Project not found!");
+        projectRepository
+                .remove(project);
     }
 
     @Override
-    public List<Project> getListProject() {
-        return projectRepository.getListProject();
+    @Transactional
+    public void clear(
+    ) throws DataValidateException {
+        @Nullable final Collection<Project> projects = projectRepository.findAll();
+        if (projects == null) throw new DataValidateException("Projects not found!");
+        projects.forEach(projectRepository::remove);
     }
 
     @Override
-    public void clear() {
-        projectRepository.clear();
+    @Transactional(readOnly = true)
+    public Project findOne(
+            @Nullable final String id
+    ) throws DataValidateException {
+        @Nullable final Project project = projectRepository
+                .findOne(id);
+        if (project == null) throw new DataValidateException("Project not found!");
+        return project;
     }
 
     @Override
-    public void merge(@Nullable final Project... projects) {
-        projectRepository.merge(projects);
+    @Transactional
+    public void remove(
+            @Nullable final String id
+    ) throws DataValidateException {
+        @Nullable final Project project = projectRepository
+                .findOne(id);
+        if (project == null) throw new DataValidateException("Project not found!");
+        projectRepository
+                .remove(project);
     }
 
     @Override
-    public void load(@Nullable final Collection<Project> projects) {
-        projectRepository.load(projects);
+    @Transactional
+    public void removeAllByUserId(
+            @Nullable final String id
+    ) throws DataValidateException {
+        @NotNull final User user = getUser(id);
+        @Nullable final Collection<Project> projects = projectRepository
+                .findAllByUserId(user);
+        if (projects == null) throw new DataValidateException("Projects not found!");
+        projects.forEach(projectRepository::remove);
     }
 
-    @Override
-    public void load(@Nullable final Project... projects) {
-        projectRepository.load(projects);
+    @Transactional(readOnly = true)
+    public User getUser(
+            @NotNull final String userId
+    ) {
+        @Nullable final User user = userRepository.findOne(userId);
+        if (user == null)
+            System.out.println("User not found!");
+        return user;
     }
-
-    @Override
-    public Project removeByOrderIndex(@Nullable final Integer orderIndex) {
-        if (orderIndex == null) return null;
-        return projectRepository.removeByOrderIndex(orderIndex);
-    }
-
 }
