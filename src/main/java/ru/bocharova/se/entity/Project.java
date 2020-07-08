@@ -1,40 +1,20 @@
 package ru.bocharova.se.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.UUID;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public final class Project implements Serializable {
-
-//    public static final long serialVersionUID = 1;
+@Entity
+@NoArgsConstructor
+@Table(name = "app_project")
+public final class Project extends AbstractEntity implements Serializable {
 
     private String id = UUID.randomUUID().toString();
 
     private String name = "";
-
-    private Date dateBegin;
-
-    private Date dateEnd;
-
-    private Date created = new Date();
-
-//    private transient Integer test = 123;
-
-    public void test() {
-        System.out.println("HELLO");
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
 
     public String getId() {
         return id;
@@ -52,20 +32,8 @@ public final class Project implements Serializable {
         this.name = name;
     }
 
-    public Date getDateBegin() {
-        return dateBegin;
+    public Project(String id, String name) {
+        this.id = id;
+        this.name = name;
     }
-
-    public void setDateBegin(Date dateBegin) {
-        this.dateBegin = dateBegin;
-    }
-
-    public Date getDateEnd() {
-        return dateEnd;
-    }
-
-    public void setDateEnd(Date dateEnd) {
-        this.dateEnd = dateEnd;
-    }
-
 }

@@ -1,26 +1,22 @@
 package ru.bocharova.se.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.UUID;
 
-public final class Task implements Serializable{
+@Entity
+@NoArgsConstructor
+@Table(name = "app_task")
+public final class Task extends AbstractEntity implements Serializable{
 
     private String id = UUID.randomUUID().toString();
 
     private String projectId;
 
     private String name = "";
-
-    private Date dateBegin;
-
-    private Date dateEnd;
-
-    public void test() {
-        System.out.println("HELLO");
-    }
 
     public String getId() {
         return id;
@@ -38,22 +34,6 @@ public final class Task implements Serializable{
         this.name = name;
     }
 
-    public Date getDateBegin() {
-        return dateBegin;
-    }
-
-    public void setDateBegin(Date dateBegin) {
-        this.dateBegin = dateBegin;
-    }
-
-    public Date getDateEnd() {
-        return dateEnd;
-    }
-
-    public void setDateEnd(Date dateEnd) {
-        this.dateEnd = dateEnd;
-    }
-
     public String getProjectId() {
         return projectId;
     }
@@ -62,4 +42,9 @@ public final class Task implements Serializable{
         this.projectId = projectId;
     }
 
+    public Task(String id, String projectId, String name) {
+        this.id = id;
+        this.projectId = projectId;
+        this.name = name;
+    }
 }

@@ -1,9 +1,6 @@
 package ru.bocharova.se.entity;
 
-
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import ru.bocharova.se.enumerate.Role;
 
@@ -18,9 +15,6 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
 @Table(name = "app_user")
 public class User extends AbstractEntity implements Serializable {
 
@@ -43,5 +37,49 @@ public class User extends AbstractEntity implements Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
 
+    public String getLogin() {
+        return login;
+    }
 
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    public User(@Nullable String login, @Nullable String password, @Nullable Role role) {
+        this.login = login;
+        this.password = password;
+        this.role = role;
+    }
 }
