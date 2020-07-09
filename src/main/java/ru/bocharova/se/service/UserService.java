@@ -14,10 +14,7 @@ import ru.bocharova.se.enumerate.Role;
 import ru.bocharova.se.exception.AuthenticationSecurityException;
 import ru.bocharova.se.exception.DataValidateException;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 public class UserService implements IUserService {
@@ -49,7 +46,7 @@ public class UserService implements IUserService {
                 .findOne(user.getId());
         if (user == null) throw new DataValidateException("User not found");
         @NotNull final User findUser = userRepository
-                .findByLogin(user1.getLogin());
+                .findByLogin(user1.getLogin()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if (findUser != null && !user1.getId().equals(findUser.getId()))
             throw new DataValidateException("User with login: '" + user1.getLogin() + "' already exist!");
         user1.setPassword(user.getPassword());
@@ -66,8 +63,9 @@ public class UserService implements IUserService {
     public User findByLogin(
             @Nullable final String login
     ) throws DataValidateException {
+        assert login != null;
         @Nullable final User user = userRepository
-                .findByLogin(login);
+                .findByLogin(login).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if (user == null) throw new DataValidateException("User not found");
         return user;
     }
@@ -77,6 +75,7 @@ public class UserService implements IUserService {
     public User findOne(
             @Nullable final String id
     ) throws DataValidateException {
+        assert id != null;
         @Nullable final User user = userRepository
                 .findOne(id);
         if (user == null) throw new DataValidateException("User not found!");
@@ -107,16 +106,17 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataValidateException {
-        final User user = findByLogin(username);
-        if (user == null) throw new UsernameNotFoundException("User not found.");
-        org.springframework.security.core.userdetails.User.UserBuilder builder = null;
-        builder = org.springframework.security.core.userdetails.User.withUsername(username);
-        builder.password(user.getPassword());
-        final List<Role> userRoles = Collections.singletonList(user.getRole());
-        final List<String> roles = new ArrayList<>();
-        for (Role role: userRoles) roles.add(role.toString());
-        builder.roles(roles.toArray(new String[] {}));
-        return builder.build();
+        final User user = userRepository.findByLogin(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        String[] roles = user.getRole().stream()
+                .map(Role::getClass)
+                .toArray(String[]::new);
+
+        return User.withUsername(username)
+                .password(user.getPassword())
+                .roles(roles)
+                .build();
     }
 
     @Override
@@ -126,7 +126,7 @@ public class UserService implements IUserService {
             @Nullable final String password
     ) throws AuthenticationSecurityException, DataValidateException {
         @Nullable final User user = userRepository
-                .findByLogin(login);
+                .findByLogin(login).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if (user == null) throw new AuthenticationSecurityException("Wrong user name!");
         if (!user.getPassword().equals(password)) throw new AuthenticationSecurityException("Wrong password!");
         return user;

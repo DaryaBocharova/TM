@@ -61,7 +61,7 @@ public final class ProjectRepository implements IProjectRepository {
 
     @Override
     public Collection<Project> findAllByUserId(
-            @NotNull final User user) {
+            final Optional<User> user) {
         @Nullable final Collection<Project> projects = entityManager
                 .createQuery("SELECT e FROM Project e WHERE e.user = :user", Project.class)
                 .setParameter("user", user)
@@ -72,7 +72,7 @@ public final class ProjectRepository implements IProjectRepository {
     @Override
     public Project findOneByUserId(
             @NotNull final String id,
-            @NotNull final User user) {
+            final Optional<User> user) {
         @Nullable final Project project = entityManager
                 .createQuery("SELECT e FROM Project e WHERE e.id = :id AND e.user = :user", Project.class)
                 .setParameter("id", id)
@@ -85,7 +85,7 @@ public final class ProjectRepository implements IProjectRepository {
     }
 
     @Override
-    public void removeAllByUserID(@NotNull final User user) {
+    public void removeAllByUserID(final Optional<User> user) {
         @Nullable final Collection<Project> projects = findAllByUserId(user);
         if (projects == null) return;
         projects.forEach(entityManager::remove);

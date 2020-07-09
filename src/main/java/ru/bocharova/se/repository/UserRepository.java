@@ -9,6 +9,7 @@ import ru.bocharova.se.entity.User;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Collection;
+import java.util.Optional;
 
 @Repository
 public final class UserRepository implements IUserRepository {
@@ -54,7 +55,7 @@ public final class UserRepository implements IUserRepository {
     }
 
     @Override
-    public User findByLogin(
+    public Optional<User> findByLogin(
             @NotNull final String login) {
         @Nullable final User user = entityManager
                 .createQuery("SELECT e FROM User e WHERE e.login = :login", User.class)
@@ -63,6 +64,6 @@ public final class UserRepository implements IUserRepository {
                 .stream()
                 .findFirst()
                 .orElse(null);
-        return user;
+        return Optional.ofNullable(user);
     }
 }

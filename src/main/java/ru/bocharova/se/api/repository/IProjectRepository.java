@@ -6,6 +6,7 @@ import ru.bocharova.se.entity.Project;
 import ru.bocharova.se.entity.User;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Repository
 public interface IProjectRepository {
@@ -27,14 +28,14 @@ public interface IProjectRepository {
             @NotNull final Project project);
 
     Collection<Project> findAllByUserId(
-            @NotNull final User user);
+            final Optional<User> user);
 
     Project findOneByUserId(
             @NotNull final String id,
-            @NotNull final User user);
+            final Optional<User> user);
 
     void removeAllByUserID(
-            @NotNull final User user);
+            final Optional<User> user);
 
     Collection<Project> sortAllByUserId(
             @NotNull final User user,

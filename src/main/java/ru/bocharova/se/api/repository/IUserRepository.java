@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.bocharova.se.entity.User;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Repository
 public interface IUserRepository {
@@ -24,6 +25,6 @@ public interface IUserRepository {
     User merge(
             @NotNull final User user);
 
-    User findByLogin(
+    Optional<User> findByLogin(
             @NotNull final String login);
 }

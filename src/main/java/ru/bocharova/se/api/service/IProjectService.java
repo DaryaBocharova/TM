@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.bocharova.se.entity.Project;
 import ru.bocharova.se.exception.DataValidateException;
 
+import java.util.Optional;
+
 @Service
 public interface IProjectService {
 
@@ -20,7 +22,7 @@ public interface IProjectService {
     ) throws DataValidateException;
 
     @Transactional(readOnly = true)
-    Project findOne(
+    Optional<Project> findOne(
             @Nullable final String id,
             @Nullable final String userId
     ) throws DataValidateException;
@@ -36,7 +38,7 @@ public interface IProjectService {
     ) throws DataValidateException;
 
     @Transactional(readOnly = true)
-    Project findOne(
+    Optional<Project> findOne(
             @Nullable final String id
     ) throws DataValidateException;
 

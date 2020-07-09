@@ -12,7 +12,8 @@ import ru.bocharova.se.entity.Project;
 import ru.bocharova.se.entity.User;
 import ru.bocharova.se.exception.DataValidateException;
 
-import java.util.Collection;;
+import java.util.Collection;
+import java.util.Optional;;
 
 @Service
 public class ProjectService implements IProjectService {
@@ -59,14 +60,14 @@ public class ProjectService implements IProjectService {
 
     @Override
     @Transactional(readOnly = true)
-    public Project findOne(
+    public Optional<Project> findOne(
             @Nullable final String id,
             @Nullable final String userId
     ) throws DataValidateException {
         @Nullable final Project project = projectRepository
                 .findOneByUserId(id, getUser(userId));
         if (project == null) throw new DataValidateException("Project not found!");
-        return project;
+        return Optional.of(project);
     }
 
     @Override
@@ -93,13 +94,13 @@ public class ProjectService implements IProjectService {
 
     @Override
     @Transactional(readOnly = true)
-    public Project findOne(
+    public Optional<Project> findOne(
             @Nullable final String id
     ) throws DataValidateException {
         @Nullable final Project project = projectRepository
                 .findOne(id);
         if (project == null) throw new DataValidateException("Project not found!");
-        return project;
+        return Optional.of(project);
     }
 
     @Override
@@ -119,7 +120,7 @@ public class ProjectService implements IProjectService {
     public void removeAllByUserId(
             @Nullable final String id
     ) throws DataValidateException {
-        @NotNull final User user = getUser(id);
+        final Optional<User> user = getUser(id);
         @Nullable final Collection<Project> projects = projectRepository
                 .findAllByUserId(user);
         if (projects == null) throw new DataValidateException("Projects not found!");
@@ -127,12 +128,12 @@ public class ProjectService implements IProjectService {
     }
 
     @Transactional(readOnly = true)
-    public User getUser(
+    public Optional<User> getUser(
             @NotNull final String userId
     ) {
         @Nullable final User user = userRepository.findOne(userId);
         if (user == null)
             System.out.println("User not found!");
-        return user;
+        return Optional.ofNullable(user);
     }
 }

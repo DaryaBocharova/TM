@@ -1,6 +1,5 @@
 package ru.bocharova.se.entity;
 
-import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 import ru.bocharova.se.enumerate.Role;
 
@@ -12,6 +11,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -53,11 +53,11 @@ public class User extends AbstractEntity implements Serializable {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
+    public List<Role> getRole() {
+        return Collections.singletonList(role);
     }
 
-    public void setRole(Role role) {
+    public void setRole(List<Role> role) {
         this.role = role;
     }
 
